@@ -26,14 +26,14 @@ document.getElementById("contact-form").addEventListener("submit", async functio
         const resultado = await respuesta.json();
 
         if (resultado.success) {
-            alert("¡Mensaje enviado correctamente! Gracias por contactarnos.");
+            alert("¡Mensaje enviado correctamente!");
             document.getElementById("contact-form").reset();
         } else {
             alert(resultado.message || "No se pudo enviar el mensaje.");
         }
 
     } catch (error) {
-        console.error("Error:", error);
-        alert("No se pudo conectar con el servidor. Verifica que Node.js esté ejecutándose.");
+        console.error(error);
+        alert("No se pudo conectar con el servidor.");
     }
 });
