@@ -5,6 +5,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/chatbot.css" />
 	</head>
 	<body class="is-preload">
 
@@ -104,24 +105,62 @@
 <section id="chatbot">
 
     <header class="major">
-        <h2>Chatbot</h2>
+        <h2>Asistente Virtual</h2>
     </header>
 
     <p>
-        Actualmente estamos desarrollando un chatbot orientado a ofrecer
-        soluciones de automatización y atención digital.
+        Habla con Cora, nuestro asistente virtual.
     </p>
 
-    <p>
-        Este proyecto se encuentra <strong>en desarrollo</strong> y
-        próximamente presentaremos nuevas funcionalidades y avances.
-    </p>
+    <div class="chatbot-container">
 
-    <ul class="actions">
-        <li>
-            <a href="#" class="button">En desarrollo</a>
-        </li>
-    </ul>
+        <div class="chatbot-header">
+            <div>
+                <strong>Cora</strong>
+                <span>Asistente virtual de ByteCore</span>
+            </div>
+
+            <span class="chatbot-status">● En línea</span>
+        </div>
+
+        <div id="chatbot-messages" class="chatbot-messages">
+
+            <div class="chatbot-message bot">
+                <div class="message-content">
+                    Hola 👋 Soy Cora, el asistente virtual de ByteCore.
+                    <br><br>
+                    ¿En qué puedo ayudarte?
+                    <br><br>
+
+                    <strong>1.</strong> Conocer nuestros servicios<br>
+                    <strong>2.</strong> Información de contacto<br>
+                    <strong>3.</strong> Solicitar un servicio<br><br>
+
+                    <strong>0.</strong> Volver al inicio
+                </div>
+            </div>
+
+        </div>
+
+        <div class="chatbot-input-area">
+
+            <input
+                type="text"
+                id="chatbot-input"
+                placeholder="Escribe una opción o pregunta..."
+                autocomplete="off"
+            />
+
+            <button
+                type="button"
+                id="chatbot-send"
+                onclick="sendChatMessage()">
+                Enviar
+            </button>
+
+        </div>
+
+    </div>
 
 </section>
 						<ul class="actions">
@@ -510,6 +549,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="assets/js/chatbot.js"></script>
 
 	</body>
 </html>
