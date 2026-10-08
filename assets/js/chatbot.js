@@ -1,29 +1,20 @@
-// ==============================
-// CHATBOT CORA - BYTECORE
-// ==============================
-
 let chatbotState = "inicio";
 
-let solicitud = {
-    servicio: "",
-    nombre: "",
-    correo: "",
-    telefono: "",
-    descripcion: ""
+let recomendacion = {
+    presupuesto: "",
+    preferencia: "",
+    producto: ""
 };
 
 
-// ==============================
-// ELEMENTOS DEL CHAT
-// ==============================
+
 
 const chatbotMessages = document.getElementById("chatbot-messages");
 const chatbotInput = document.getElementById("chatbot-input");
+const chatbotSend = document.getElementById("chatbot-send");
 
 
-// ==============================
-// ENVIAR MENSAJE
-// ==============================
+
 
 function sendChatMessage() {
 
@@ -41,9 +32,7 @@ function sendChatMessage() {
 }
 
 
-// ==============================
-// MENSAJES RÁPIDOS
-// ==============================
+
 
 function sendQuickMessage(message) {
 
@@ -53,9 +42,6 @@ function sendQuickMessage(message) {
 }
 
 
-// ==============================
-// MOSTRAR MENSAJE DEL USUARIO
-// ==============================
 
 function addUserMessage(message) {
 
@@ -75,9 +61,7 @@ function addUserMessage(message) {
 }
 
 
-// ==============================
-// MOSTRAR MENSAJE DE CORA
-// ==============================
+
 
 function addBotMessage(message) {
 
@@ -97,25 +81,17 @@ function addBotMessage(message) {
 }
 
 
-// ==============================
-// PROCESAR MENSAJE
-// ==============================
 
 function processMessage(message) {
 
     const text = normalizeText(message);
 
-    // --------------------------------
-    // VOLVER AL INICIO DESDE CUALQUIER PARTE
-    // --------------------------------
 
     if (
         text === "0" ||
         text === "volver" ||
         text === "atras" ||
-        text === "atrás" ||
         text === "menu" ||
-        text === "menú" ||
         text === "inicio"
     ) {
 
@@ -123,11 +99,6 @@ function processMessage(message) {
 
         return;
     }
-
-
-    // --------------------------------
-    // MENÚ PRINCIPAL
-    // --------------------------------
 
     if (chatbotState === "inicio") {
 
@@ -137,175 +108,92 @@ function processMessage(message) {
     }
 
 
-    // --------------------------------
-    // MENÚ DE SERVICIOS
-    // --------------------------------
 
-    if (chatbotState === "servicios") {
+    if (chatbotState === "recomendacion") {
 
-        handleServicesMenu(text);
+        handleRecommendation(text);
 
         return;
     }
 
 
-    // --------------------------------
-    // INFORMACIÓN DEL SERVICIO
-    // --------------------------------
 
-    if (chatbotState === "detalle-servicio") {
+    if (chatbotState === "presupuesto") {
 
-        handleServiceDetail(text);
+        handleBudget(text);
 
         return;
     }
 
 
-    // --------------------------------
-    // SOLICITUD DE SERVICIO
-    // --------------------------------
 
-    if (chatbotState === "solicitar-servicio") {
 
-        handleRequestService(text);
+    if (chatbotState === "preferencia") {
+
+        handlePreference(text);
 
         return;
     }
 
 
-    // --------------------------------
-    // NOMBRE
-    // --------------------------------
 
-    if (chatbotState === "nombre") {
 
-        solicitud.nombre = message.trim();
+    if (chatbotState === "producto") {
 
-        chatbotState = "correo";
-
-        addBotMessage(`
-            Perfecto, ${escapeHTML(solicitud.nombre)}. 👍
-            <br><br>
-            Ahora escribe tu correo electrónico.
-            <br><br>
-            <strong>0.</strong> Volver al inicio
-        `);
+        handleProduct(text);
 
         return;
     }
 
 
-    // --------------------------------
-    // CORREO
-    // --------------------------------
 
-    if (chatbotState === "correo") {
 
-        if (!isValidEmail(message)) {
+    if (chatbotState === "menu") {
 
-            addBotMessage(`
-                El correo no parece válido. 📧
-                <br><br>
-                Por favor, escribe un correo como:
-                <strong>ejemplo@correo.com</strong>
-                <br><br>
-                <strong>0.</strong> Volver al inicio
-            `);
-
-            return;
-        }
-
-        solicitud.correo = message.trim();
-
-        chatbotState = "telefono";
-
-        addBotMessage(`
-            Gracias. 👍
-            <br><br>
-            Ahora escribe tu número de teléfono.
-            <br><br>
-            <strong>0.</strong> Volver al inicio
-        `);
+        handleMenu(text);
 
         return;
     }
 
 
-    // --------------------------------
-    // TELÉFONO
-    // --------------------------------
 
-    if (chatbotState === "telefono") {
+    if (chatbotState === "contacto") {
 
-        solicitud.telefono = message.trim();
-
-        chatbotState = "descripcion";
-
-        addBotMessage(`
-            Perfecto. 📱
-            <br><br>
-            Cuéntame brevemente qué necesitas o qué proyecto tienes en mente.
-            <br><br>
-            <strong>0.</strong> Volver al inicio
-        `);
+        showMainMenu();
 
         return;
     }
 
 
-    // --------------------------------
-    // DESCRIPCIÓN
-    // --------------------------------
+    if (chatbotState === "solicitud") {
 
-    if (chatbotState === "descripcion") {
-
-        solicitud.descripcion = message.trim();
-
-        chatbotState = "confirmacion";
-
-        showSummary();
+        handleRequest(text);
 
         return;
     }
 
 
-    // --------------------------------
-    // CONFIRMACIÓN
-    // --------------------------------
-
-    if (chatbotState === "confirmacion") {
-
-        handleConfirmation(text);
-
-        return;
-    }
-
-
-    // --------------------------------
-    // RESPUESTA POR DEFECTO
-    // --------------------------------
 
     addBotMessage(`
         No estoy segura de haber entendido. 🤔
         <br><br>
+
         Puedes escribir <strong>0</strong> para volver al inicio.
     `);
 }
 
 
-// ==============================
-// MENÚ PRINCIPAL
-// ==============================
 
 function handleMainMenu(text) {
 
     if (
         text === "1" ||
-        text.includes("servicio") ||
-        text.includes("servicios")
+        text.includes("recomiendame") ||
+        text.includes("recomienda") ||
+        text.includes("recomendacion")
     ) {
 
-        showServices();
+        startRecommendation();
 
         return;
     }
@@ -313,11 +201,43 @@ function handleMainMenu(text) {
 
     if (
         text === "2" ||
-        text.includes("contacto") ||
-        text.includes("correo") ||
-        text.includes("telefono") ||
-        text.includes("teléfono") ||
-        text.includes("celular")
+        text.includes("economico") ||
+        text.includes("barato")
+    ) {
+
+        startBudget();
+
+        return;
+    }
+
+
+    if (
+        text === "3" ||
+        text.includes("especial") ||
+        text.includes("hambre")
+    ) {
+
+        recommendSpecial();
+
+        return;
+    }
+
+
+    if (
+        text === "4" ||
+        text.includes("menu") ||
+        text.includes("menú")
+    ) {
+
+        showMenu();
+
+        return;
+    }
+
+
+    if (
+        text === "5" ||
+        text.includes("contacto")
     ) {
 
         showContact();
@@ -326,53 +246,47 @@ function handleMainMenu(text) {
     }
 
 
-    if (
-        text === "3" ||
-        text.includes("solicitar") ||
-        text.includes("contratar") ||
-        text.includes("cotizacion") ||
-        text.includes("cotización")
-    ) {
-
-        startServiceRequest();
-
-        return;
-    }
-
-
-    addBotMessage(`
-        Selecciona una de las siguientes opciones:
-        <br><br>
-
-        <strong>1.</strong> Conocer nuestros servicios<br>
-        <strong>2.</strong> Información de contacto<br>
-        <strong>3.</strong> Solicitar un servicio<br><br>
-
-        <strong>0.</strong> Volver al inicio
-    `);
+    showMainMenu();
 }
 
 
-// ==============================
-// MOSTRAR SERVICIOS
-// ==============================
+function showMainMenu() {
 
-function showServices() {
-
-    chatbotState = "servicios";
+    chatbotState = "inicio";
 
     addBotMessage(`
-        Estos son nuestros servicios:
+        <strong>¡Hola! 👋 Soy Cora.</strong>
+
         <br><br>
 
-        <strong>1.</strong> Desarrollo Web<br>
-        <strong>2.</strong> Programación<br>
-        <strong>3.</strong> Desarrollo Android<br>
-        <strong>4.</strong> Python<br>
-        <strong>5.</strong> Bases de datos<br>
-        <strong>6.</strong> Inteligencia Artificial<br><br>
+        Soy la asistente virtual de demostración
+        de <strong>ByteCore</strong>.
 
-        Escribe el número del servicio que deseas conocer.
+        <br><br>
+
+        Puedo ayudarte a encontrar una opción
+        según lo que estás buscando.
+
+        <br><br>
+
+        <strong>¿Qué deseas hacer?</strong>
+
+        <br><br>
+
+        🍔 <strong>1.</strong> Recomiéndame algo
+        <br>
+
+        💰 <strong>2.</strong> Quiero algo económico
+        <br>
+
+        🔥 <strong>3.</strong> Quiero algo especial
+        <br>
+
+        📋 <strong>4.</strong> Ver menú
+        <br>
+
+        📞 <strong>5.</strong> Contactar
+
         <br><br>
 
         <strong>0.</strong> Volver al inicio
@@ -380,36 +294,29 @@ function showServices() {
 }
 
 
-// ==============================
-// MENÚ DE SERVICIOS
-// ==============================
+function startRecommendation() {
 
-function handleServicesMenu(text) {
-
-    const services = {
-        "1": "Desarrollo Web",
-        "2": "Programación",
-        "3": "Desarrollo Android",
-        "4": "Python",
-        "5": "Bases de datos",
-        "6": "Inteligencia Artificial"
-    };
-
-
-    if (services[text]) {
-
-        solicitud.servicio = services[text];
-
-        chatbotState = "detalle-servicio";
-
-        showServiceDescription(text);
-
-        return;
-    }
-
+    chatbotState = "recomendacion";
 
     addBotMessage(`
-        Por favor, selecciona un número del <strong>1 al 6</strong>.
+        ¡Perfecto! 😋
+
+        <br><br>
+
+        Te voy a hacer un par de preguntas
+        para recomendarte una opción.
+
+        <br><br>
+
+        ¿Qué estás buscando?
+
+        <br><br>
+
+        🍔 <strong>1.</strong> Una hamburguesa
+        <br>
+
+        🍟 <strong>2.</strong> Un combo
+
         <br><br>
 
         <strong>0.</strong> Volver al inicio
@@ -417,177 +324,32 @@ function handleServicesMenu(text) {
 }
 
 
-// ==============================
-// DESCRIPCIÓN DE SERVICIOS
-// ==============================
 
-function showServiceDescription(option) {
+function handleRecommendation(text) {
 
-    let description = "";
+    if (text === "1" || text.includes("hamburguesa")) {
 
-    switch (option) {
+        chatbotState = "presupuesto";
 
-        case "1":
-            description = `
-                <strong>Desarrollo Web</strong>
-                <br><br>
-                Creamos sitios y aplicaciones web adaptadas a las necesidades
-                de cada proyecto.
-            `;
-            break;
-
-        case "2":
-            description = `
-                <strong>Programación</strong>
-                <br><br>
-                Desarrollamos soluciones de software utilizando diferentes
-                tecnologías de programación.
-            `;
-            break;
-
-        case "3":
-            description = `
-                <strong>Desarrollo Android</strong>
-                <br><br>
-                Creamos aplicaciones móviles para dispositivos Android.
-            `;
-            break;
-
-        case "4":
-            description = `
-                <strong>Python</strong>
-                <br><br>
-                Utilizamos Python para desarrollar soluciones, automatizaciones
-                y diferentes proyectos de software.
-            `;
-            break;
-
-        case "5":
-            description = `
-                <strong>Bases de datos</strong>
-                <br><br>
-                Diseñamos y gestionamos bases de datos para organizar y
-                administrar información de diferentes proyectos.
-            `;
-            break;
-
-        case "6":
-            description = `
-                <strong>Inteligencia Artificial</strong>
-                <br><br>
-                Desarrollamos soluciones que utilizan inteligencia artificial
-                y automatización.
-            `;
-            break;
-    }
-
-
-    addBotMessage(`
-        ${description}
-
-        <br><br>
-
-        ¿Deseas solicitar este servicio?
-
-        <br><br>
-
-        <strong>1.</strong> Sí, solicitar servicio<br>
-        <strong>2.</strong> No, volver a servicios<br><br>
-
-        <strong>0.</strong> Volver al inicio
-    `);
-}
-
-
-// ==============================
-// DETALLE DEL SERVICIO
-// ==============================
-
-function handleServiceDetail(text) {
-
-    if (text === "1" || text.includes("si") || text.includes("sí")) {
-
-        startServiceRequest();
-
-        return;
-    }
-
-
-    if (text === "2" || text.includes("no")) {
-
-        showServices();
-
-        return;
-    }
-
-
-    addBotMessage(`
-        Selecciona una opción:
-        <br><br>
-
-        <strong>1.</strong> Sí, solicitar servicio<br>
-        <strong>2.</strong> No, volver a servicios<br><br>
-
-        <strong>0.</strong> Volver al inicio
-    `);
-}
-
-
-// ==============================
-// INICIAR SOLICITUD
-// ==============================
-
-function startServiceRequest() {
-
-    chatbotState = "solicitar-servicio";
-
-    addBotMessage(`
-        Claro. Vamos a registrar tu solicitud. 👍
-        <br><br>
-
-        ¿Qué servicio necesitas?
-        <br><br>
-
-        <strong>1.</strong> Desarrollo Web<br>
-        <strong>2.</strong> Programación<br>
-        <strong>3.</strong> Desarrollo Android<br>
-        <strong>4.</strong> Python<br>
-        <strong>5.</strong> Bases de datos<br>
-        <strong>6.</strong> Inteligencia Artificial<br><br>
-
-        <strong>0.</strong> Volver al inicio
-    `);
-}
-
-
-// ==============================
-// SELECCIÓN DEL SERVICIO
-// ==============================
-
-function handleRequestService(text) {
-
-    const services = {
-        "1": "Desarrollo Web",
-        "2": "Programación",
-        "3": "Desarrollo Android",
-        "4": "Python",
-        "5": "Bases de datos",
-        "6": "Inteligencia Artificial"
-    };
-
-
-    if (services[text]) {
-
-        solicitud.servicio = services[text];
-
-        chatbotState = "nombre";
+        recomendacion.preferencia = "hamburguesa";
 
         addBotMessage(`
-            Has seleccionado:
-            <strong>${escapeHTML(solicitud.servicio)}</strong>
+            🍔 ¡Excelente elección!
+
             <br><br>
 
-            Para continuar, dime tu nombre.
+            ¿Cuánto quieres gastar aproximadamente?
+
+            <br><br>
+
+            💰 <strong>1.</strong> Hasta $20.000
+            <br>
+
+            💳 <strong>2.</strong> Entre $20.000 y $25.000
+            <br>
+
+            ⭐ <strong>3.</strong> No tengo límite
+
             <br><br>
 
             <strong>0.</strong> Volver al inicio
@@ -597,88 +359,258 @@ function handleRequestService(text) {
     }
 
 
-    addBotMessage(`
-        Selecciona un servicio escribiendo un número del
-        <strong>1 al 6</strong>.
-        <br><br>
+    if (text === "2" || text.includes("combo")) {
 
-        <strong>0.</strong> Volver al inicio
-    `);
+        recomendacion.preferencia = "combo";
+
+        recommendCombo();
+
+        return;
+    }
+
+
+    startRecommendation();
 }
 
 
-// ==============================
-// MOSTRAR RESUMEN
-// ==============================
+function handleBudget(text) {
 
-function showSummary() {
+    if (text === "1") {
 
-    addBotMessage(`
-        <strong>Resumen de tu solicitud</strong>
-        <br><br>
+        recomendacion.presupuesto = "economico";
 
-        <strong>Servicio:</strong>
-        ${escapeHTML(solicitud.servicio)}
-        <br>
+        showRecommendation(
+            "Hamburguesa Clásica",
+            "$18.000",
+            "Una opción sencilla, completa y económica."
+        );
 
-        <strong>Nombre:</strong>
-        ${escapeHTML(solicitud.nombre)}
-        <br>
-
-        <strong>Correo:</strong>
-        ${escapeHTML(solicitud.correo)}
-        <br>
-
-        <strong>Teléfono:</strong>
-        ${escapeHTML(solicitud.telefono)}
-        <br>
-
-        <strong>Descripción:</strong>
-        ${escapeHTML(solicitud.descripcion)}
-
-        <br><br>
-
-        ¿Deseas confirmar esta solicitud?
-
-        <br><br>
-
-        <strong>1.</strong> Sí, confirmar<br>
-        <strong>2.</strong> No, cancelar<br><br>
-
-        <strong>0.</strong> Volver al inicio
-    `);
-}
+        return;
+    }
 
 
-// ==============================
-// CONFIRMACIÓN
-// ==============================
+    if (text === "2") {
 
-function handleConfirmation(text) {
+        recomendacion.presupuesto = "medio";
 
-    if (text === "1" || text.includes("si") || text.includes("sí")) {
-
-        saveRequest();
-
-        chatbotState = "inicio";
+        chatbotState = "preferencia";
 
         addBotMessage(`
-            ¡Solicitud registrada correctamente! ✅
+            Perfecto. 👍
+
             <br><br>
 
-            Gracias por contactarnos, ${escapeHTML(solicitud.nombre)}.
-            Nuestro equipo podrá comunicarse contigo utilizando los datos
-            proporcionados.
+            Ahora dime qué prefieres:
+
             <br><br>
 
-            Escribe <strong>0</strong> para volver al inicio.
+            🥓 <strong>1.</strong> Algo clásico
+            <br>
+
+            🔥 <strong>2.</strong> Algo con sabor BBQ
+            <br>
+
+            ⭐ <strong>3.</strong> Algo más especial
+
+            <br><br>
+
+            <strong>0.</strong> Volver al inicio
         `);
 
         return;
     }
 
 
-    if (text === "2" || text.includes("no") || text.includes("cancelar")) {
+    if (text === "3") {
+
+        showRecommendation(
+            "Hamburguesa Especial",
+            "$25.000",
+            "Una opción más completa para quienes buscan una experiencia diferente."
+        );
+
+        return;
+    }
+
+
+    addBotMessage(`
+        Selecciona una opción:
+
+        <br><br>
+
+        <strong>1.</strong> Hasta $20.000
+        <br>
+
+        <strong>2.</strong> Entre $20.000 y $25.000
+        <br>
+
+        <strong>3.</strong> No tengo límite
+    `);
+}
+
+
+function handlePreference(text) {
+
+    if (text === "1") {
+
+        showRecommendation(
+            "Hamburguesa Clásica",
+            "$18.000",
+            "Una hamburguesa tradicional y sencilla."
+        );
+
+        return;
+    }
+
+
+    if (text === "2") {
+
+        showRecommendation(
+            "Hamburguesa BBQ",
+            "$22.000",
+            "Una opción con salsa BBQ para quienes buscan un sabor diferente."
+        );
+
+        return;
+    }
+
+
+    if (text === "3") {
+
+        showRecommendation(
+            "Hamburguesa Especial",
+            "$25.000",
+            "Nuestra opción más completa para una experiencia especial."
+        );
+
+        return;
+    }
+
+
+    addBotMessage(`
+        Elige una opción:
+
+        <br><br>
+
+        <strong>1.</strong> Clásico
+        <br>
+
+        <strong>2.</strong> BBQ
+        <br>
+
+        <strong>3.</strong> Especial
+    `);
+}
+
+
+
+function recommendSpecial() {
+
+    showRecommendation(
+        "Hamburguesa Especial",
+        "$25.000",
+        "Nuestra recomendación para quienes quieren probar algo diferente."
+    );
+}
+
+
+function recommendCombo() {
+
+    showRecommendation(
+        "Combo BBQ",
+        "$29.000",
+        "Hamburguesa BBQ acompañada de papas y bebida."
+    );
+}
+
+
+function showRecommendation(nombre, precio, descripcion) {
+
+    chatbotState = "producto";
+
+    recomendacion.producto = nombre;
+
+    addBotMessage(`
+        <strong>🎯 Tengo una recomendación para ti</strong>
+
+        <br><br>
+
+        🍔 <strong>${nombre}</strong>
+
+        <br><br>
+
+        ${descripcion}
+
+        <br><br>
+
+        💰 <strong>${precio}</strong>
+
+        <br><br>
+
+        Esta recomendación se basa en las
+        preferencias que seleccionaste.
+
+        <br><br>
+
+        ¿Qué quieres hacer?
+
+        <br><br>
+
+        <strong>1.</strong> Me interesa
+        <br>
+
+        <strong>2.</strong> Ver el menú
+        <br>
+
+        <strong>3.</strong> Empezar de nuevo
+
+        <br><br>
+
+        <strong>0.</strong> Volver al inicio
+    `);
+}
+
+
+function handleProduct(text) {
+
+    if (text === "1" || text.includes("interesa")) {
+
+        chatbotState = "solicitud";
+
+        addBotMessage(`
+            ¡Excelente! 😄
+
+            <br><br>
+
+            Has seleccionado:
+
+            <br>
+
+            🍔 <strong>${escapeHTML(recomendacion.producto)}</strong>
+
+            <br><br>
+
+            Para continuar con la demostración,
+            escribe tu nombre.
+
+            <br><br>
+
+            <strong>0.</strong> Volver al inicio
+        `);
+
+        return;
+    }
+
+
+    if (text === "2" || text.includes("menu")) {
+
+        showMenu();
+
+        return;
+    }
+
+
+    if (text === "3") {
 
         resetChatbot();
 
@@ -687,38 +619,160 @@ function handleConfirmation(text) {
 
 
     addBotMessage(`
-        Por favor selecciona:
+        Selecciona una opción:
+
         <br><br>
 
-        <strong>1.</strong> Sí, confirmar<br>
-        <strong>2.</strong> No, cancelar<br><br>
+        <strong>1.</strong> Me interesa
+        <br>
+
+        <strong>2.</strong> Ver el menú
+        <br>
+
+        <strong>3.</strong> Empezar de nuevo
+    `);
+}
+
+
+
+function handleRequest(text) {
+
+    if (text === "") {
+
+        addBotMessage(`
+            Escribe tu nombre para continuar.
+        `);
+
+        return;
+    }
+
+
+    addBotMessage(`
+        Gracias, <strong>${escapeHTML(text)}</strong>. 👍
+
+        <br><br>
+
+        En una versión completa,
+        aquí podríamos solicitar los datos
+        necesarios para enviar el pedido
+        directamente al negocio.
+
+        <br><br>
+
+        Esta función se encuentra
+        actualmente en desarrollo.
+
+        <br><br>
+
+        <strong>0.</strong> Volver al inicio
+    `);
+
+    chatbotState = "inicio";
+}
+
+
+
+
+function showMenu() {
+
+    chatbotState = "menu";
+
+    addBotMessage(`
+        <strong>🍔 MENÚ BURGERBYTE</strong>
+
+        <br><br>
+
+        🍔 <strong>Hamburguesa Clásica</strong>
+        <br>
+        Carne, queso, lechuga y tomate.
+        <br>
+        <strong>$18.000</strong>
+
+        <br><br>
+
+        🔥 <strong>Hamburguesa BBQ</strong>
+        <br>
+        Hamburguesa con salsa BBQ.
+        <br>
+        <strong>$22.000</strong>
+
+        <br><br>
+
+        ⭐ <strong>Hamburguesa Especial</strong>
+        <br>
+        Nuestra opción más completa.
+        <br>
+        <strong>$25.000</strong>
+
+        <br><br>
+
+        🍟 <strong>Combo Clásico</strong>
+        <br>
+        Hamburguesa + papas + bebida.
+        <br>
+        <strong>$25.000</strong>
+
+        <br><br>
+
+        🔥 <strong>Combo BBQ</strong>
+        <br>
+        Hamburguesa BBQ + papas + bebida.
+        <br>
+        <strong>$29.000</strong>
+
+        <br><br>
+
+        ¿Quieres que Cora te recomiende una opción?
+
+        <br><br>
+
+        <strong>1.</strong> Sí, recomendarme algo
+        <br>
 
         <strong>0.</strong> Volver al inicio
     `);
 }
 
 
-// ==============================
-// CONTACTO
-// ==============================
+
+
+function handleMenu(text) {
+
+    if (text === "1" || text.includes("si")) {
+
+        startRecommendation();
+
+        return;
+    }
+
+
+    showMenu();
+}
+
 
 function showContact() {
 
     chatbotState = "contacto";
 
     addBotMessage(`
-        Puedes contactar directamente con nuestro equipo:
+        📞 <strong>Contacto ByteCore</strong>
+
         <br><br>
 
-        📱 <strong>Celular:</strong> 313 851 5868
-        <br>
+        Si quieres conocer cómo adaptar
+        un asistente como Cora a tu negocio,
+        puedes comunicarte con nuestro equipo.
+
+        <br><br>
 
         📧 <strong>Correo:</strong>
-        Kevin.velez@uniminuto.edu.co
+        juancarlosmoreno356@gmail.com
 
         <br><br>
 
-        Puedes llamarnos o escribirnos directamente.
+        También puedes utilizar el formulario
+        de contacto de nuestra página.
+
         <br><br>
 
         <strong>0.</strong> Volver al inicio
@@ -726,78 +780,53 @@ function showContact() {
 }
 
 
-// ==============================
-// GUARDAR SOLICITUD
-// ==============================
 
-function saveRequest() {
-
-    let requests = JSON.parse(
-        localStorage.getItem("bytecore_leads") || "[]"
-    );
-
-    requests.push({
-        servicio: solicitud.servicio,
-        nombre: solicitud.nombre,
-        correo: solicitud.correo,
-        telefono: solicitud.telefono,
-        descripcion: solicitud.descripcion,
-        fecha: new Date().toLocaleString()
-    });
-
-    localStorage.setItem(
-        "bytecore_leads",
-        JSON.stringify(requests)
-    );
-}
-
-
-// ==============================
-// REINICIAR CHATBOT
-// ==============================
 
 function resetChatbot() {
 
     chatbotState = "inicio";
 
-    solicitud = {
-        servicio: "",
-        nombre: "",
-        correo: "",
-        telefono: "",
-        descripcion: ""
+    recomendacion = {
+        presupuesto: "",
+        preferencia: "",
+        producto: ""
     };
 
     addBotMessage(`
         Volvamos al inicio. 👋
-        <br><br>
-
-        ¿En qué puedo ayudarte?
 
         <br><br>
 
-        <strong>1.</strong> Conocer nuestros servicios<br>
-        <strong>2.</strong> Información de contacto<br>
-        <strong>3.</strong> Solicitar un servicio<br><br>
+        Soy <strong>Cora</strong>,
+        tu asistente virtual.
+
+        <br><br>
+
+        ¿Qué deseas hacer?
+
+        <br><br>
+
+        🍔 <strong>1.</strong> Recomiéndame algo
+        <br>
+
+        💰 <strong>2.</strong> Algo económico
+        <br>
+
+        🔥 <strong>3.</strong> Algo especial
+        <br>
+
+        📋 <strong>4.</strong> Ver menú
+        <br>
+
+        📞 <strong>5.</strong> Contactar
+
+        <br><br>
 
         <strong>0.</strong> Volver al inicio
     `);
 }
 
 
-// ==============================
-// VALIDAR CORREO
-// ==============================
-
-function isValidEmail(email) {
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-
-// ==============================
-// NORMALIZAR TEXTO
-// ==============================
 
 function normalizeText(text) {
 
@@ -809,9 +838,6 @@ function normalizeText(text) {
 }
 
 
-// ==============================
-// PROTEGER TEXTO DEL USUARIO
-// ==============================
 
 function escapeHTML(text) {
 
@@ -824,9 +850,7 @@ function escapeHTML(text) {
 }
 
 
-// ==============================
-// BAJAR EL CHAT AUTOMÁTICAMENTE
-// ==============================
+
 
 function scrollChat() {
 
@@ -835,9 +859,6 @@ function scrollChat() {
 }
 
 
-// ==============================
-// ENTER PARA ENVIAR
-// ==============================
 
 chatbotInput.addEventListener("keydown", function(event) {
 
@@ -849,3 +870,26 @@ chatbotInput.addEventListener("keydown", function(event) {
     }
 
 });
+
+
+
+if (chatbotSend) {
+
+    chatbotSend.addEventListener("click", function() {
+
+        sendChatMessage();
+
+    });
+
+}
+
+
+setTimeout(function() {
+
+    if (chatbotMessages.children.length === 0) {
+
+        showMainMenu();
+
+    }
+
+}, 300);

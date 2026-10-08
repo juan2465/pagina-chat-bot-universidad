@@ -20,7 +20,13 @@ const transporter = nodemailer.createTransport({
 
 app.post("/contacto", async (req, res) => {
 
-    const { nombre, email, mensaje } = req.body;
+    const {
+    nombre,
+    negocio,
+    email,
+    tipoNegocio,
+    mensaje
+} = req.body;
 
     if (!nombre || !email || !mensaje) {
         return res.status(400).json({
@@ -31,21 +37,32 @@ app.post("/contacto", async (req, res) => {
 
     try {
 
-        await transporter.sendMail({
-            from: "juancarlosmoreno356@gmail.com",
-            to: "juancarlosmoreno356@gmail.com",
-            replyTo: email,
-            subject: `Nuevo mensaje de ${nombre} - ByteCore`,
-            text: `
-Nuevo mensaje recibido desde ByteCore IA Solutions
+      await transporter.sendMail({
+
+    from: "juancarlosmoreno356@gmail.com",
+
+    to: "juancarlosmoreno356@gmail.com",
+
+    replyTo: email,
+
+    subject: `Nueva solicitud de ${nombre} - ByteCore`,
+
+    text: `
+Nueva solicitud recibida desde ByteCore IA Solutions
 
 Nombre: ${nombre}
+
+Negocio: ${negocio || "No especificado"}
+
+Tipo de negocio: ${tipoNegocio || "No especificado"}
+
 Correo: ${email}
 
 Mensaje:
+
 ${mensaje}
-            `
-        });
+    `
+});
 
         res.json({
             success: true,
