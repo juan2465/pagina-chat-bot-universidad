@@ -139,3 +139,76 @@
         width: 100%;
     }
 }
+
+/* Cora — interfaz alineada con la identidad visual de ByteCore */
+.chatbot-container {
+    max-width: 760px !important;
+    border: 1px solid rgba(167,139,250,.35);
+    border-radius: 20px;
+    background: #0e172b;
+    box-shadow: 0 24px 65px rgba(0,0,0,.28), 0 0 35px rgba(139,92,246,.09);
+}
+.chatbot-header {
+    padding: 20px 22px;
+    color: #f3f1ff;
+    background: linear-gradient(110deg, #28204f, #172a4b);
+    border-bottom: 1px solid rgba(167,139,250,.24);
+}
+.chatbot-header strong { color: #fff; font-size: 1.2em; }
+.chatbot-header span { color: #c5c9e8; }
+.chatbot-status { color: #9bf2c8 !important; }
+.chatbot-messages {
+    background:
+      radial-gradient(ellipse at 100% 0%, rgba(99,102,241,.10), transparent 60%),
+      #0b1324;
+    padding: 24px;
+    scrollbar-color: #51427e #111a30;
+}
+.chatbot-message { margin-bottom: 18px; }
+.message-content {
+    padding: 14px 17px;
+    border-radius: 16px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+.chatbot-message.bot .message-content {
+    background: #18243b;
+    border: 1px solid rgba(169,188,230,.13);
+    color: #e2e9fa;
+    border-top-left-radius: 5px;
+}
+.chatbot-message.user .message-content {
+    background: linear-gradient(130deg, #7655e8, #456edb);
+    color: #fff;
+    border-top-right-radius: 5px;
+    box-shadow: 0 5px 16px rgba(75,90,220,.15);
+}
+.message-content strong { color: #fff; }
+.message-content em { color: #b7c5e4; }
+.chatbot-input-area {
+    gap: 12px;
+    padding: 16px;
+    background: #111a30;
+    border-top: 1px solid rgba(169,188,230,.16);
+}
+#chatbot-input {
+    min-width: 0;
+    background: #080f1f !important;
+    border: 1px solid rgba(169,188,230,.24) !important;
+    color: #f1f5ff !important;
+}
+#chatbot-input:focus {
+    border-color: #a78bfa !important;
+    box-shadow: 0 0 0 3px rgba(139,92,246,.16) !important;
+}
+#chatbot-send {
+    min-width: 88px;
+    border-radius: 10px !important;
+    background: linear-gradient(120deg, #7655e8, #477be9) !important;
+}
+@media screen and (max-width: 600px) {
+    .chatbot-messages { padding: 15px; }
+    .chatbot-input-area { padding: 12px; gap: 8px; }
+    .message-content { max-width: 94%; padding: 12px 13px; }
+    #chatbot-send { min-width: 72px; padding-left: 12px; padding-right: 12px; }
+}

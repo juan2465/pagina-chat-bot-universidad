@@ -3,6 +3,12 @@ let chatbotState = "negocio";
 let negocioActual = "";
 let productoSeleccionado = null;
 let productosVisibles = [];
+let clienteCora = {
+    nombre: "",
+    email: ""
+};
+
+let pinEnviado = false;
 
 const chatbotMessages = document.getElementById("chatbot-messages");
 const chatbotInput = document.getElementById("chatbot-input");
@@ -175,28 +181,46 @@ function sendQuickMessage(message) {
 
 
 
+
 function showBusinessMenu() {
-    chatbotState = "negocio";
+    chatbotState = "inicio-cora";
     negocioActual = "";
     productoSeleccionado = null;
     productosVisibles = [];
 
     addBotMessage(`
-        <strong>¡Hola! 👋 Soy Cora, la recepcionista digital de ByteCore.</strong>
+        <strong>¡Hola! 👋 Soy Cora, la asistente virtual de ByteCore.</strong>
         <br><br>
-        Puedo orientar a tus clientes, mostrar opciones y acompañarlos durante una compra de demostración.
+        Ayudamos a pequeños negocios a mejorar la atención
+        de sus clientes mediante páginas web y asistentes virtuales.
         <br><br>
-        <strong>¿Qué negocio quieres explorar?</strong>
+        <strong>¿Cómo puedo ayudarte hoy?</strong>
         <br><br>
-        🍔 <strong>1.</strong> BurgerByte — Restaurante
+        <strong>1.</strong> Probar una demostración interactiva
         <br>
-        🏋️ <strong>2.</strong> GymByte — Gimnasio
+        <strong>2.</strong> Quiero una solución para mi negocio
         <br><br>
-        Escribe <strong>1</strong> o <strong>2</strong>.
-        <br>
-        Escribe <strong>0</strong> para volver a este menú.
+        <em>Escribe 1 o 2 para continuar.</em>
     `);
 }
+
+function showDemoMenu() {
+    chatbotState = "negocio";
+
+    addBotMessage(`
+        <strong>¡Explora lo que Cora puede hacer!</strong>
+        <br><br>
+        <strong>1.</strong> 🍔 BurgerByte — Restaurante
+        <br>
+        <strong>2.</strong> 🏋️ GymByte — Gimnasio
+        <br><br>
+        Podrás consultar productos, precios y opciones
+        en estos negocios de demostración.
+        <br><br>
+        Escribe <strong>0</strong> para volver al inicio.
+    `);
+}
+
 
 function showMainMenu() {
     chatbotState = "menu-principal";
@@ -247,6 +271,88 @@ function processMessage(message) {
     }
 
     switch (chatbotState) {
+        
+        case "inicio-cora":
+            if (text === "1" || text.includes("demo")) {
+                showDemoMenu();
+            } else if (
+                text === "2" ||
+                text.includes("negocio") ||
+                text.includes("solucion") ||
+                text.includes("servicio")
+            ) {
+                chatbotState = "lead-tipo";
+
+                addBotMessage(`
+                    <strong>¡Hablemos de tu negocio!</strong>
+                    <br><br>
+                    ¿A qué tipo de negocio quieres ayudar
+                    a mejorar su atención?
+                    <br><br>
+                    Por ejemplo: restaurante, gimnasio,
+                    tienda, emprendimiento o servicios profesionales.
+                `);
+            } else {
+                addBotMessage(
+                    "Escribe 1 para probar una demo o 2 para conocer la solución para tu negocio."
+                );
+            }
+            break;
+
+        case "lead-tipo":
+            if (message.trim().length < 2) {
+                addBotMessage(
+                    "Cuéntame qué tipo de negocio tienes o administras."
+                );
+                break;
+            }
+
+            clienteCora.tipoNegocio = message.trim().slice(0, 100);
+            chatbotState = "lead-necesidad";
+
+            addBotMessage(`
+                ¿Qué te gustaría mejorar primero?
+                <br><br>
+                Por ejemplo: responder preguntas frecuentes,
+                mostrar servicios y precios, recibir solicitudes
+                o facilitar el contacto con tus clientes.
+            `);
+            break;
+
+        case "lead-necesidad":
+            if (message.trim().length < 5) {
+                addBotMessage(
+                    "Cuéntame un poco más sobre lo que necesitas."
+                );
+                break;
+            }
+
+            clienteCora.necesidad = message.trim().slice(0, 1000);
+            chatbotState = "lead-nombre";
+
+            addBotMessage(
+                "¿Cómo te llamas? Así podremos identificar tu solicitud."
+            );
+            break;
+
+        case "lead-nombre":
+            if (message.trim().length < 2) {
+                addBotMessage("Escribe tu nombre para continuar.");
+                break;
+            }
+
+            clienteCora.nombre = message.trim().slice(0, 100);
+            chatbotState = "lead-email";
+
+            addBotMessage(
+                "¿Cuál es tu correo electrónico de contacto?"
+            );
+            break;
+
+        case "lead-email":
+            enviarSolicitudComercial(message.trim());
+            break;
+
         case "negocio":
             if (
                 text === "1" ||
@@ -307,9 +413,36 @@ function processMessage(message) {
             }
             break;
 
-        case "nombre-compra":
-            finishDemoPurchase(message.trim());
-            break;
+       
+case "nombre-compra": {
+    const nombre = message.trim();
+
+    if (nombre.length < 2 || nombre.length > 80) {
+        addBotMessage("Escribe un nombre válido de entre 2 y 80 caracteres.");
+        break;
+    }
+
+    clienteCora.nombre = nombre;
+    chatbotState = "correo-compra";
+
+    addBotMessage(`
+        ¡Gracias, ${escapeHTML(nombre)}! 😊
+        <br><br>
+        Ahora escribe tu correo electrónico para enviarte un PIN de verificación.
+        <br><br>
+        <em>Esta compra continúa siendo una demostración sin pago real.</em>
+    `);
+    break;
+}
+
+case "correo-compra":
+    solicitarPinCora(message.trim());
+    break;
+
+case "verificar-pin":
+    verificarPinCora(message.trim());
+    break;
+
 
         case "contacto":
             addBotMessage(`
@@ -564,83 +697,6 @@ function showContact() {
 
 
 
-function finishDemoPurchase(name) {
-    if (!name) {
-        addBotMessage(
-            "Escribe un nombre para el comprobante de demostración."
-        );
-        return;
-    }
-
-    if (!productoSeleccionado) {
-        showMainMenu();
-        return;
-    }
-
-    const pin = String(
-        Math.floor(100000 + Math.random() * 900000)
-    );
-
-    const record = {
-        negocio: negocioActual === "gimnasio"
-            ? "GymByte"
-            : "BurgerByte",
-        cliente: name.slice(0, 80),
-        producto: productoSeleccionado.nombre,
-        valor: productoSeleccionado.precio,
-        pin: pin,
-        estado: "DEMO - NO PAGADO",
-        fecha: new Date().toISOString()
-    };
-
-
-    try {
-        const guardadas = localStorage.getItem("cora_compras_demo");
-        const compras = guardadas ? JSON.parse(guardadas) : [];
-
-        if (Array.isArray(compras)) {
-            compras.push(record);
-            localStorage.setItem(
-                "cora_compras_demo",
-                JSON.stringify(compras)
-            );
-        }
-    } catch (error) {
-        console.warn(
-            "No fue posible guardar el comprobante local:",
-            error
-        );
-    }
-
-    chatbotState = "fin";
-
-    addBotMessage(`
-        <strong>✅ Comprobante de demostración</strong>
-        <br><br>
-        Cliente: ${escapeHTML(record.cliente)}
-        <br>
-        Negocio: ${escapeHTML(record.negocio)}
-        <br>
-        Producto: ${escapeHTML(record.producto)}
-        <br>
-        Valor de referencia:
-        <strong>${formatPrice(record.valor)}</strong>
-        <br><br>
-        <strong>PIN DE PRUEBA: ${pin}</strong>
-        <br><br>
-        <strong>Estado: DEMOSTRACIÓN — NO PAGADO</strong>
-        <br><br>
-        Este PIN se genera localmente. No se envió por correo, no verifica un pago y no habilita acceso.
-        <br><br>
-        <strong>1.</strong> Explorar este negocio
-        <br>
-        <strong>2.</strong> Elegir otro negocio
-        <br><br>
-        <strong>0.</strong> Volver al inicio
-    `);
-}
-
-
 
 function resetChatbot() {
     showBusinessMenu();
@@ -679,4 +735,239 @@ if (!chatbotSend) {
     console.error(
         "Cora no encontró el elemento #chatbot-send. Revisa el ID del botón de envío."
     );
+}
+
+
+async function enviarSolicitudComercial(email) {
+    const correo = email.trim().toLowerCase();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        addBotMessage(
+            "Ese correo no parece válido. Escríbelo de nuevo."
+        );
+        return;
+    }
+
+    if (
+        !clienteCora.nombre ||
+        !clienteCora.tipoNegocio ||
+        !clienteCora.necesidad
+    ) {
+        addBotMessage(
+            "Faltan algunos datos. Escribe 0 para volver al inicio."
+        );
+        return;
+    }
+
+    addBotMessage("Estoy enviando tu solicitud a ByteCore...");
+
+    try {
+        const respuesta = await fetch("/contacto", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre: clienteCora.nombre,
+                email: correo,
+                negocio: clienteCora.tipoNegocio,
+                tipoNegocio: clienteCora.tipoNegocio,
+                mensaje: clienteCora.necesidad
+            })
+        });
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok || !resultado.success) {
+            addBotMessage(
+                "No pudimos enviar tu solicitud. Puedes intentarlo de nuevo o utilizar el formulario de contacto."
+            );
+            return;
+        }
+
+        addBotMessage(`
+            <strong>¡Gracias por contactar a ByteCore! ✨</strong>
+            <br><br>
+            Tu solicitud se ha enviado correctamente.
+            Revisaremos la información para conocer mejor
+            las necesidades de tu negocio.
+            <br><br>
+            <strong>¿Qué quieres hacer ahora?</strong>
+            <br><br>
+            <strong>1.</strong> Explorar una demostración
+            <br>
+            <strong>0.</strong> Volver al inicio
+        `);
+
+        clienteCora.email = correo;
+        chatbotState = "fin";
+    } catch (error) {
+        console.error("Error enviando solicitud comercial:", error);
+
+        addBotMessage(
+            "No pude conectar con el servidor. Comprueba que esté ejecutándose e inténtalo de nuevo."
+        );
+    }
+}
+
+
+async function solicitarPinCora(email) {
+    const correo = email.trim().toLowerCase();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        addBotMessage("Ese correo no parece válido. Escríbelo de nuevo.");
+        return;
+    }
+
+    if (!productoSeleccionado) {
+        addBotMessage("No encuentro la selección. Volvamos al menú.");
+        showMainMenu();
+        return;
+    }
+
+    clienteCora.email = correo;
+    addBotMessage("Estoy solicitando tu código de verificación... ✉️");
+
+    try {
+        const respuesta = await fetch("/api/enviar-pin", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre: clienteCora.nombre,
+                email: clienteCora.email
+            })
+        });
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok || !resultado.success) {
+            addBotMessage(
+                escapeHTML(resultado.message || "No fue posible enviar el PIN.")
+            );
+            return;
+        }
+
+        pinEnviado = true;
+        chatbotState = "verificar-pin";
+
+        addBotMessage(`
+            <strong>📩 ¡Código solicitado!</strong>
+            <br><br>
+            ${escapeHTML(resultado.message)}
+            <br><br>
+            Revisa tu bandeja de entrada y la carpeta de spam.
+            Escribe aquí el PIN de seis dígitos que recibiste.
+            <br><br>
+            <em>El código caduca en 10 minutos.</em>
+        `);
+    } catch (error) {
+        console.error("Error solicitando PIN:", error);
+        addBotMessage(
+            "No pude conectar con el servidor. Comprueba que Node.js esté ejecutándose e inténtalo de nuevo."
+        );
+    }
+
+}
+
+async function verificarPinCora(pin) {
+    if (!pinEnviado) {
+        addBotMessage("Primero solicita un PIN para tu correo.");
+        return;
+    }
+
+    if (!/^\d{6}$/.test(pin)) {
+        addBotMessage("Escribe el PIN de seis dígitos que recibiste por correo.");
+        return;
+    }
+
+    addBotMessage("Verificando el código... 🔐");
+
+    try {
+        const respuesta = await fetch("/api/verificar-pin", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: clienteCora.email,
+                pin
+            })
+        });
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok || !resultado.success) {
+            addBotMessage(
+                escapeHTML(resultado.message || "No se pudo verificar el código.")
+            );
+            return;
+        }
+
+        finalizarCompraDemoVerificada();
+    } catch (error) {
+        console.error("Error verificando PIN:", error);
+        addBotMessage(
+            "No pude conectar con el servidor para verificar el PIN. Inténtalo de nuevo."
+        );
+    }
+}
+
+function finalizarCompraDemoVerificada() {
+    if (!productoSeleccionado) {
+        showMainMenu();
+        return;
+    }
+
+    const record = {
+        negocio: negocioActual === "gimnasio" ? "GymByte" : "BurgerByte",
+        cliente: clienteCora.nombre,
+        email: clienteCora.email,
+        producto: productoSeleccionado.nombre,
+        valor: productoSeleccionado.precio,
+        estado: "DEMO - NO PAGADO",
+        correoVerificado: true,
+        fecha: new Date().toISOString()
+    };
+
+    try {
+        const guardadas = localStorage.getItem("cora_compras_demo");
+        const compras = guardadas ? JSON.parse(guardadas) : [];
+
+        if (Array.isArray(compras)) {
+            compras.push(record);
+            localStorage.setItem("cora_compras_demo", JSON.stringify(compras));
+        }
+    } catch (error) {
+        console.warn("No fue posible guardar el registro de demostración:", error);
+    }
+
+    pinEnviado = false;
+    chatbotState = "fin";
+
+    addBotMessage(`
+        <strong>✅ Correo verificado correctamente</strong>
+        <br><br>
+        Cliente: ${escapeHTML(record.cliente)}
+        <br>
+        Correo: ${escapeHTML(record.email)}
+        <br>
+        Negocio: ${escapeHTML(record.negocio)}
+        <br>
+        Selección: ${escapeHTML(record.producto)}
+        <br>
+        Valor de referencia: <strong>${formatPrice(record.valor)}</strong>
+        <br><br>
+        <strong>Estado: DEMOSTRACIÓN — NO PAGADO</strong>
+        <br><br>
+        Tu correo fue verificado. Este prototipo no procesa pagos ni genera pedidos reales.
+        <br><br>
+        <strong>1.</strong> Explorar este negocio
+        <br>
+        <strong>2.</strong> Elegir otro negocio
+        <br><br>
+        <strong>0.</strong> Volver al inicio
+    `);
+    
 }
