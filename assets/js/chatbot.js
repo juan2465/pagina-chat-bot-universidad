@@ -1,7 +1,4 @@
-/* Cora - demo comercial de ByteCore.
- * Los catálogos, inventarios, sedes y tarifas de envío de este archivo son de ejemplo.
- * El PIN verifica el correo; no procesa pagos ni confirma pedidos reales.
- */
+
 let chatbotState = "negocio";
 let negocioActual = "";
 let productoSeleccionado = null;
@@ -14,7 +11,6 @@ const chatbotMessages = document.getElementById("chatbot-messages");
 const chatbotInput = document.getElementById("chatbot-input");
 const chatbotSend = document.getElementById("chatbot-send");
 
-// Inventario ilustrativo. En una versión real se conectará al inventario del negocio.
 const catalogos = {
     restaurante: [
         { id: "r1", nombre: "Hamburguesa Clásica", precio: 18000, descripcion: "Carne, queso, vegetales y salsa de la casa.", stock: 8, tipo: "plato" },
@@ -46,7 +42,7 @@ const catalogos = {
 };
 
 const nombresNegocio = { restaurante: "BurgerByte", gimnasio: "GymByte", muebles: "MueblesByte" };
-// Sedes ficticias para mostrar el flujo. Sustituir por direcciones reales antes de publicar.
+
 const sedesDemo = [
     { nombre: "Sede Centro (demo)", zona: "Centro", direccion: "Dirección de ejemplo por configurar" },
     { nombre: "Sede Norte (demo)", zona: "Norte", direccion: "Dirección de ejemplo por configurar" },
@@ -122,7 +118,7 @@ function processMessage(message) {
         case "direccion-domicilio":
             if (message.trim().length < 5 || message.trim().length > 180) { addBotMessage("Escribe una dirección más completa (entre 5 y 180 caracteres)."); break; }
             pedidoActual.direccion = message.trim();
-            // Tarifa ilustrativa; la cobertura y tarifa reales deben venir del negocio.
+            
             pedidoActual.envio = negocioActual === "muebles" ? 45000 : 7000;
             mostrarResumenPedido(); break;
         case "sede-zona": mostrarSedes(message.trim()); break;
@@ -298,7 +294,6 @@ else console.error("Cora no encontró #chatbot-messages. Revisa los IDs del HTML
 if (!chatbotInput) console.error("Cora no encontró #chatbot-input.");
 if (!chatbotSend) console.error("Cora no encontró #chatbot-send.");
 
-// Alternativa de producto agotado, y acción inicial tras seleccionar un producto disponible.
 const processMessageOriginal = processMessage;
 processMessage = function(message) {
     const text = normalizeText(message);
@@ -331,7 +326,7 @@ async function solicitarPinCora(email) {
         console.error("Error solicitando PIN:", error);
         addBotMessage("No pude conectar con el servidor. Comprueba que Node.js esté ejecutándose e inténtalo de nuevo.");
     }
-    // Importante: conservar nombre, correo y pinEnviado hasta terminar la verificación.
+   
 }
 async function verificarPinCora(pin) {
     if (!pinEnviado) { addBotMessage("Primero solicita un PIN para tu correo."); return; }
@@ -355,7 +350,6 @@ function finalizarCompraDemoVerificada() {
         estado: "DEMO - NO PAGADO", correoVerificado: true, fecha: new Date().toISOString()
     };
     try {
-        // Guardar solo datos no identificables en el navegador; no persistir correo ni dirección.
         const guardadas = localStorage.getItem("cora_compras_demo"); const compras = guardadas ? JSON.parse(guardadas) : [];
         const registroAnonimo = {
             negocio: record.negocio, producto: record.producto, cantidad: record.cantidad,

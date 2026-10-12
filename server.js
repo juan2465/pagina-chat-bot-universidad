@@ -115,7 +115,7 @@ app.post("/api/enviar-pin", async (req, res) => {
     const ahora = Date.now();
     const ultimaSolicitud = solicitudes.get(correo) || 0;
 
-    // Espera mínima de 60 segundos entre envíos al mismo correo.
+    
     if (ahora - ultimaSolicitud < 60000) {
         return res.status(429).json({
             success: false,
@@ -125,7 +125,7 @@ app.post("/api/enviar-pin", async (req, res) => {
 
     const pin = crypto.randomInt(100000, 1000000).toString();
 
-    // Guardamos el PIN antes de enviarlo, pero nunca lo devolvemos al navegador.
+    
     pins.set(correo, {
         pin,
         nombre: nombre.trim(),
@@ -164,7 +164,7 @@ ByteCore IA Solutions`
     }
 });
 
-// CORA: VERIFICAR EL PIN
+
 app.post("/api/verificar-pin", (req, res) => {
     const { email, pin } = req.body;
 
