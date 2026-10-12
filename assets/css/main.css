@@ -235,7 +235,7 @@ input, select, textarea {
 		text-align: right;
 	}
 
-/* Container */
+}
 
 	.container {
 		margin: 0 auto;
@@ -1751,7 +1751,6 @@ input, select, textarea {
 
 		}
 
-/* Section/Article */
 
 	section.special, article.special {
 		text-align: center;
@@ -1787,7 +1786,7 @@ input, select, textarea {
 		font-size: 2em;
 	}
 
-/* Form */
+
 
 	form {
 		margin: 0 0 2em 0;
@@ -1990,7 +1989,7 @@ input, select, textarea {
 			padding: 0;
 		}
 
-/* Icon */
+
 
 	.icon {
 		text-decoration: none;
@@ -3202,11 +3201,7 @@ input, select, textarea {
 				padding-left: 0;
 			}
 
-	}/* =========================================
-   RESPONSIVE - BYTECORE
-   ========================================= */
-
-/* Pantallas grandes */
+	}
 @media screen and (min-width: 1281px) {
 
     #main {
@@ -3219,7 +3214,7 @@ input, select, textarea {
 }
 
 
-/* Portátiles y pantallas medianas */
+
 @media screen and (max-width: 1280px) and (min-width: 981px) {
 
     #header {
@@ -3237,7 +3232,7 @@ input, select, textarea {
 }
 
 
-/* Tablets */
+
 @media screen and (max-width: 980px) {
 
     #header {
@@ -3263,7 +3258,7 @@ input, select, textarea {
 }
 
 
-/* Celulares */
+
 @media screen and (max-width: 736px) {
 
     body,
@@ -3291,7 +3286,6 @@ input, select, textarea {
 }
 
 
-/* Celulares pequeños */
 @media screen and (max-width: 480px) {
 
     body,
@@ -3317,10 +3311,7 @@ input, select, textarea {
 }
 	
 
-/* =========================================================
-   BYTECORE VISUAL REFRESH — confianza, innovación y acción
-   Paleta: azul marino + violeta + acento coral
-   ========================================================= */
+
 :root {
     --bc-bg: #0b1020;
     --bc-panel: #111a30;
@@ -3500,4 +3491,28 @@ hr { border-bottom-color: var(--bc-border); }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { transition-duration: .01ms !important; }
+}
+
+
+.furniture-section {
+    position: relative;
+}
+.furniture-section .row article {
+    padding: 1.25em;
+    border: 1px solid var(--bc-border);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(24,35,61,.82), rgba(17,26,48,.78));
+    transition: transform .2s ease, border-color .2s ease;
+}
+.furniture-section .row article:hover {
+    transform: translateY(-3px);
+    border-color: rgba(103,212,255,.55);
+}
+.commercial-note {
+    margin-top: 1.5em;
+    padding: 1em 1.2em;
+    border-left: 3px solid #67d4ff;
+    border-radius: 0 12px 12px 0;
+    background: rgba(103,212,255,.07);
+    color: #d5e5ff;
 }
